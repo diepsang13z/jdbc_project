@@ -51,13 +51,13 @@
 						<form
 							action="${context}/admin-home"
 							method="post">
-							
+
 							<!-- COMMAND -->
 							<input
 								type="hidden"
 								name="command"
 								value="CREATE">
-							
+
 							<!-- INFO -->
 							<div class="modal-body">
 								<div class="row row-cols-2">
@@ -81,7 +81,7 @@
 										<label class="form-label">Số điện thoại</label>
 										<input
 											type="text"
-											name="phone"
+											name="phone_number"
 											class="form-control">
 									</div>
 
@@ -111,7 +111,9 @@
 
 									<div class="col">
 										<label class="form-label"></label>
-										<select class="form-select">
+										<select
+											name="role"
+											class="form-select">
 											<option selected>Chọn loại vai trò</option>
 											<option value="admin">Admin</option>
 											<option value="user">User</option>
@@ -120,7 +122,7 @@
 
 								</div>
 							</div>
-							
+
 							<!-- SUBMIT -->
 							<div class="modal-footer">
 								<button
@@ -244,7 +246,80 @@
 								<td class="text-danger fw-bold">Đã khóa</td>
 							</c:when>
 						</c:choose>
-						<td>NULL</td>
+						<td>
+							<div class="row row-cols-3 text-center m-1">
+								<div class="p-1">
+									<a
+										href="#"
+										class="w-100 col btn btn-success">Gửi</a>
+								</div>
+								<div class="p-1">
+									<a
+										href="#"
+										class="w-100 col btn btn-primary">Sửa</a>
+								</div>
+								<div class="p-1">
+									<a
+										href="#"
+										class="w-100 col btn btn-warning">Chi tiết</a>
+								</div>
+								<div class="p-1">
+									<button
+										type="button"
+										class="w-100 col btn btn-danger"
+										data-bs-toggle="modal"
+										data-bs-target="#confirm_delete_user">Xóa</button>
+
+									<!-- Dialog -->
+									<div
+										class="modal fade"
+										id="confirm_delete_user"
+										tabindex="-1"
+										aria-labelledby="exampleModalLabel"
+										aria-hidden="true">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h1
+														class="modal-title fs-5"
+														id="exampleModalLabel">Bạn có chắc muốn xóa?</h1>
+													<button
+														type="button"
+														class="btn-close"
+														data-bs-dismiss="modal"
+														aria-label="Close"></button>
+												</div>
+
+												<div class="modal-body text-start">
+													<!-- User info -->
+													Người dùng: admin
+												</div>
+
+												<div class="modal-footer">
+													<button
+														type="button"
+														class="btn btn-secondary"
+														data-bs-dismiss="modal">Close</button>
+													<a
+														href="#"
+														class="btn btn-danger">Xóa</a>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="p-1">
+									<a
+										href="#"
+										class="w-100 col btn btn-danger">Khóa</a>
+								</div>
+								<div class="p-1">
+									<a
+										href="#"
+										class="w-100 col btn btn-success">Mở</a>
+								</div>
+							</div>
+						</td>
 					</tr>
 				</c:forEach>
 			</tbody>

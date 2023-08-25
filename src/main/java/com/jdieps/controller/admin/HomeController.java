@@ -1,7 +1,6 @@
 package com.jdieps.controller.admin;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,9 +11,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 import com.jdieps.service.admin.PaginationService;
+import com.jdieps.service.admin.UserManagementService;
 
 @WebServlet(urlPatterns = { "/admin-home" })
 public class HomeController extends HttpServlet {
@@ -28,6 +29,7 @@ public class HomeController extends HttpServlet {
 	private DataSource mDataSource;
 
 	private PaginationService mPaginationService;
+	private UserManagementService mUserManagementService;
 
 	private Map<String, ProcessingMethod> mCommandAction;
 
@@ -37,6 +39,7 @@ public class HomeController extends HttpServlet {
 
 		try {
 			mPaginationService = new PaginationService(mDataSource, NUMBER_ENTRIES_PER_PAGE, VIEW_PATH);
+			mUserManagementService = new UserManagementService(mDataSource);
 		} catch (SQLException e) {
 			throw new ServletException("Error initializing PaginationService", e);
 		}
@@ -53,8 +56,9 @@ public class HomeController extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		req.setCharacterEncoding("utf-8");
+		actionCommand(req, resp);
 	}
-
 
 	// PRIVATE
 	private interface ProcessingMethod {
@@ -79,14 +83,36 @@ public class HomeController extends HttpServlet {
 				throw new RuntimeException("ERROR: listUser method in Pagination Service!", e);
 			}
 		});
-		
+
 		mCommandAction.put("CREATE", (req, resp) -> {
-			processCreateRequest(req, resp);
-			
+			String usernameParam = req.getParameter("username");
+			String passwordParam = req.getParameter("password");
+			String fullnameParam = req.getParameter("fullname");
+			String emailParam = req.getParameter("email");
+			String phoneNumberParam = req.getParameter("phone_number");
+			String addressParam = req.getParameter("address");
+			String roleParam = req.getParameter("role");
+
+			String message = null;
+
+			try {
+				message = mUserManagementService.addUser(usernameParam, passwordParam, fullnameParam, emailParam,
+						phoneNumberParam, addressParam, roleParam);
+			} catch (SQLException e) {
+				throw new RuntimeException("ERROR: addUser method in UserManagementService!", e);
+			}
+
+			HttpSession session = req.getSession();
+			session.setAttribute("message", message);
+			try {
+				mPaginationService.listUser(req, resp);
+			} catch (ServletException | IOException | SQLException e) {
+				throw new RuntimeException("ERROR: listUser method in Pagination Service!", e);
+			}
 		});
 
 	}
-	
+
 	// PRIVATE
 	private void actionCommand(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		try {
@@ -101,10 +127,6 @@ public class HomeController extends HttpServlet {
 		} catch (Exception e) {
 			throw new ServletException("ERROR in actionCommand method", e);
 		}
-	}
-	
-	private void processCreateRequest(HttpServletRequest req, HttpServletResponse resp) {
-		
 	}
 
 }

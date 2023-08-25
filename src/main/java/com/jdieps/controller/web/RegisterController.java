@@ -102,9 +102,9 @@ public class RegisterController extends HttpServlet {
 		
 		try {			
 			mUserDbUtil.createUser(newUser);
-			ServletUtil.forwardWithMessage(req, resp, REGISTER_PAGE, NotificationMessageConstant.REGISTER_SUCCESS);
+			ServletUtil.forwardWithMessage(req, resp, REGISTER_PAGE, NotificationMessageConstant.SUCCESS);
 		} catch (Exception e) {
-			ServletUtil.forwardWithMessage(req, resp, REGISTER_PAGE, NotificationMessageConstant.REGISTER_NOT_SUCCESS);
+			ServletUtil.forwardWithMessage(req, resp, REGISTER_PAGE, NotificationMessageConstant.NOT_SUCCESS);
 		}
 
 	}
