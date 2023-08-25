@@ -1,7 +1,12 @@
 package com.jdieps.service.admin;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 import com.jdieps.constant.NotificationMessageConstant;
@@ -22,30 +27,50 @@ public class UserManagementService {
 		mRoleDbUtil = new RoleDbUtil(dataSource);
 	}
 
-	public String addUser(String username, String password, String fullname, String email, String phoneNumber,
-			String address, String role) throws SQLException {
-		
-		boolean isUserNameExsited = checkUserNameExsited(username);
-		boolean isEmailExsited = checkEmailExsited(email);
+	public void addUser(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
+		HttpSession session = req.getSession();
+
+		String usernameParam = req.getParameter("username");
+		String passwordParam = req.getParameter("password");
+		String fullnameParam = req.getParameter("fullname");
+		String emailParam = req.getParameter("email");
+		String phoneNumberParam = req.getParameter("phone_number");
+		String addressParam = req.getParameter("address");
+		String roleParam = req.getParameter("role");
+
+		boolean isUserNameExsited = checkUserNameExsited(usernameParam);
+		boolean isEmailExsited = checkEmailExsited(emailParam);
 		if (isUserNameExsited || isEmailExsited) {
-			return NotificationMessageConstant.USER_EXISTED;
+			session.setAttribute("message", NotificationMessageConstant.USER_EXISTED);
+			return;
 		}
-		
+
 		EStatus userStatus = EStatus.ACTIVE;
-		RoleModel userRole = mRoleDbUtil.getRoleByName(role);
+		RoleModel userRole = mRoleDbUtil.getRoleByName(roleParam);
 		long userRoleId = userRole.getId();
-		
-		UserModel newUser = new UserModel(username, password, fullname, email, phoneNumber, address, userStatus, userRoleId);
-		
-		try {			
+
+		UserModel newUser = new UserModel(usernameParam, passwordParam, fullnameParam, emailParam, phoneNumberParam,
+				addressParam, userStatus, userRoleId);
+
+		try {
 			mUserDbUtil.createUser(newUser);
-			return NotificationMessageConstant.SUCCESS;
+			ServletUtil.setSessionMessage(req, resp, NotificationMessageConstant.SUCCESS);
 		} catch (Exception e) {
-			return NotificationMessageConstant.NOT_SUCCESS;
+			ServletUtil.setSessionMessage(req, resp, NotificationMessageConstant.NOT_SUCCESS);
 		}
-		
+
 	}
-	
+
+	public void deleteUser(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
+		String idParam = req.getParameter("userId");
+		try {
+			mUserDbUtil.deleteUserById(idParam);
+			ServletUtil.setSessionMessage(req, resp, NotificationMessageConstant.SUCCESS);
+		} catch (Exception e) {
+			ServletUtil.setSessionMessage(req, resp, NotificationMessageConstant.NOT_SUCCESS);
+		}
+	}
+
 	// PRIVATE
 	private boolean checkUserNameExsited(String username) throws SQLException {
 		return mUserDbUtil.getUserByUserName(username) != null;

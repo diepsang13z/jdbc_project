@@ -187,7 +187,6 @@ public class UserDbUtil extends DbUtil {
 	public void createUser(UserModel user) throws SQLException {
 		Connection conn = null;
 		PreparedStatement preStmt = null;
-		ResultSet rs = null;
 
 		try {
 			conn = super.mDataSource.getConnection();
@@ -211,7 +210,26 @@ public class UserDbUtil extends DbUtil {
 			preStmt.execute();
 
 		} finally {
-			close(conn, preStmt, rs);
+			close(conn, preStmt, null);
+		}
+	}
+	
+	public void deleteUserById(String id) throws SQLException {
+		Connection conn = null;
+		Statement stmt = null;
+
+		try {
+			conn = super.mDataSource.getConnection();
+			
+			long userId = Integer.parseInt(id);
+			String query = String.format("delete from %s where %s=%d",
+					UserDbFieldConstant.TABLE, UserDbFieldConstant.ID, userId);
+			
+			stmt = conn.createStatement();
+			stmt.execute(query);
+
+		} finally {
+			close(conn, stmt, null);
 		}
 	}
 

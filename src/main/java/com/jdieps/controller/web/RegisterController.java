@@ -90,17 +90,17 @@ public class RegisterController extends HttpServlet {
 		}
 
 		String userAddress = null;
-		
+
 		EStatus userStatus = EStatus.ACTIVE;
-		
+
 		String roleName = ERole.USER.name();
 		RoleModel role = mRoleDbUtil.getRoleByName(roleName);
 		long userRoleId = role.getId();
 
 		UserModel newUser = new UserModel(usernameParam, passwordParam, fullnameParam, emailParam, phoneNumberParam,
 				userAddress, userStatus, userRoleId);
-		
-		try {			
+
+		try {
 			mUserDbUtil.createUser(newUser);
 			ServletUtil.forwardWithMessage(req, resp, REGISTER_PAGE, NotificationMessageConstant.SUCCESS);
 		} catch (Exception e) {

@@ -225,6 +225,20 @@
 				<c:forEach
 					var="entry"
 					items="${ENTRIES_DATA}">
+
+					<!-- SET PARAM -->
+					<c:url
+						var="deleteUserLink"
+						value="admin-home">
+						<c:param
+							name="command"
+							value="DELETE" />
+						<c:param
+							name="userId"
+							value="${entry.id}" />
+					</c:url>
+
+					<!-- SHOW INFO -->
 					<tr>
 						<td>${entry.fullname}</td>
 						<td>${entry.email}</td>
@@ -268,12 +282,12 @@
 										type="button"
 										class="w-100 col btn btn-danger"
 										data-bs-toggle="modal"
-										data-bs-target="#confirm_delete_user">Xóa</button>
+										data-bs-target="#confirm_delete_user_${entry.username}">Xóa</button>
 
 									<!-- Dialog -->
 									<div
 										class="modal fade"
-										id="confirm_delete_user"
+										id="confirm_delete_user_${entry.username}"
 										tabindex="-1"
 										aria-labelledby="exampleModalLabel"
 										aria-hidden="true">
@@ -292,7 +306,8 @@
 
 												<div class="modal-body text-start">
 													<!-- User info -->
-													Người dùng: admin
+													Người dùng:
+													<span>${entry.username}</span>
 												</div>
 
 												<div class="modal-footer">
@@ -301,7 +316,7 @@
 														class="btn btn-secondary"
 														data-bs-dismiss="modal">Close</button>
 													<a
-														href="#"
+														href="${deleteUserLink}"
 														class="btn btn-danger">Xóa</a>
 												</div>
 											</div>

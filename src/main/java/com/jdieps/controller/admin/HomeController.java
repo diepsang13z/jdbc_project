@@ -72,7 +72,7 @@ public class HomeController extends HttpServlet {
 			try {
 				mPaginationService.listUser(req, resp);
 			} catch (ServletException | IOException | SQLException e) {
-				throw new RuntimeException("ERROR: listUser method in Pagination Service!", e);
+				throw new RuntimeException("ERROR: listUser method in PaginationService!", e);
 			}
 		});
 
@@ -80,35 +80,26 @@ public class HomeController extends HttpServlet {
 			try {
 				mPaginationService.changePage(req, resp);
 			} catch (ServletException | IOException | SQLException e) {
-				throw new RuntimeException("ERROR: listUser method in Pagination Service!", e);
+				throw new RuntimeException("ERROR: listUser method in PaginationService!", e);
 			}
 		});
 
 		mCommandAction.put("CREATE", (req, resp) -> {
-			String usernameParam = req.getParameter("username");
-			String passwordParam = req.getParameter("password");
-			String fullnameParam = req.getParameter("fullname");
-			String emailParam = req.getParameter("email");
-			String phoneNumberParam = req.getParameter("phone_number");
-			String addressParam = req.getParameter("address");
-			String roleParam = req.getParameter("role");
-
-			String message = null;
-
 			try {
-				message = mUserManagementService.addUser(usernameParam, passwordParam, fullnameParam, emailParam,
-						phoneNumberParam, addressParam, roleParam);
+				mUserManagementService.addUser(req, resp);
 			} catch (SQLException e) {
 				throw new RuntimeException("ERROR: addUser method in UserManagementService!", e);
 			}
-
-			HttpSession session = req.getSession();
-			session.setAttribute("message", message);
+			mCommandAction.get("LIST").method(req, resp);
+		});
+		
+		mCommandAction.put("DELETE", (req, resp) -> {
 			try {
-				mPaginationService.listUser(req, resp);
-			} catch (ServletException | IOException | SQLException e) {
-				throw new RuntimeException("ERROR: listUser method in Pagination Service!", e);
+				mUserManagementService.deleteUser(req, resp);
+			} catch (SQLException e) {
+				throw new RuntimeException("ERROR: deleteUser method in UserManagementService!", e);
 			}
+			mCommandAction.get("LIST").method(req, resp);
 		});
 
 	}

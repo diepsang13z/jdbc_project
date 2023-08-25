@@ -56,7 +56,7 @@ public class PaginationDbUtil extends DbUtil {
 
 		try {
 			conn = mDataSource.getConnection();
-			String query = String.format("select * from %s " + "order by %s " + "limit ?, ?", 
+			String query = String.format("select * from %s " + "order by %s " + "limit ?, ?",
 					UserDbFieldConstant.TABLE, UserDbFieldConstant.ID);
 
 			final int offsetValue = (pageNumber - 1) * mNumberEntriesPerPage;
