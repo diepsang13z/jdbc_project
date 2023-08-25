@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import com.jdieps.constant.UserDbFieldConstant;
 import com.jdieps.model.EStatus;
 import com.jdieps.model.UserModel;
 
@@ -29,7 +30,7 @@ public class PaginationDbUtil extends DbUtil {
 
 		try {
 			conn = mDataSource.getConnection();
-			String query = "select count(*) from user";
+			String query = "select count(*) from " + UserDbFieldConstant.TABLE;
 
 			preStmt = conn.prepareStatement(query);
 			rs = preStmt.executeQuery();
@@ -55,7 +56,8 @@ public class PaginationDbUtil extends DbUtil {
 
 		try {
 			conn = mDataSource.getConnection();
-			String query = "select * from user " + "order by id " + "limit ?, ?";
+			String query = String.format("select * from %s " + "order by %s " + "limit ?, ?", 
+					UserDbFieldConstant.TABLE, UserDbFieldConstant.ID);
 
 			final int offsetValue = (pageNumber - 1) * mNumberEntriesPerPage;
 			final int limmitValue = mNumberEntriesPerPage;
@@ -67,20 +69,21 @@ public class PaginationDbUtil extends DbUtil {
 			rs = preStmt.executeQuery();
 
 			while (rs.next()) {
-				long userId = rs.getLong("id");
-				String userName = rs.getString("username");
-				String userPwd = rs.getString("password");
-				String userFullname = rs.getString("fullname");
-				String userEmail = rs.getString("email");
-				String userPhoneNumber = rs.getString("phoneNumber");
+				long userId = rs.getLong(UserDbFieldConstant.ID);
+				String userName = rs.getString(UserDbFieldConstant.USERNAME);
+				String userPassword = rs.getString(UserDbFieldConstant.PASSWOED);
+				String userFullname = rs.getString(UserDbFieldConstant.FULLNAME);
+				String userEmail = rs.getString(UserDbFieldConstant.EMAIL);
+				String userPhoneNumber = rs.getString(UserDbFieldConstant.PHONE_NUMBER);
+				String userAdress = rs.getString(UserDbFieldConstant.ADDRESS);
 
-				int dbStatus = rs.getInt("status");
+				int dbStatus = rs.getInt(UserDbFieldConstant.STATUS);
 				EStatus userStatus = EStatus.findByValue(dbStatus);
 
-				long roleId = rs.getLong("role_id");
+				long roleId = rs.getLong(UserDbFieldConstant.ROLE_ID);
 
-				UserModel user = new UserModel(userId, userName, userPwd, userFullname, userEmail, userPhoneNumber,
-						userStatus, roleId);
+				UserModel user = new UserModel(userId, userName, userPassword, userFullname, userEmail, userPhoneNumber,
+						userAdress, userStatus, roleId);
 
 				entries.add(user);
 			}

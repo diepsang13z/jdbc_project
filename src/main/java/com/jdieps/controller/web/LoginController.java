@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
-import com.jdieps.constant.ErrorMessageConstant;
+import com.jdieps.constant.NotificationMessageConstant;
 import com.jdieps.dao.RoleDbUtil;
 import com.jdieps.dao.UserDbUtil;
 import com.jdieps.model.ERole;
@@ -62,7 +62,7 @@ public class LoginController extends HttpServlet {
 
 		boolean isRequired = isRequired(emailParam, passwordParam);
 		if (!isRequired) {
-			ServletUtil.forwardWithMessage(req, resp, LOGIN_PAGE, ErrorMessageConstant.MISSING_DATA);
+			ServletUtil.forwardWithMessage(req, resp, LOGIN_PAGE, NotificationMessageConstant.MISSING_DATA);
 		}
 
 		try {
@@ -82,7 +82,7 @@ public class LoginController extends HttpServlet {
 				}
 
 			} else {
-				ServletUtil.forwardWithMessage(req, resp, LOGIN_PAGE, ErrorMessageConstant.USER_NOT_FOUND);
+				ServletUtil.forwardWithMessage(req, resp, LOGIN_PAGE, NotificationMessageConstant.USER_NOT_FOUND);
 			}
 
 		} catch (SQLException e) {

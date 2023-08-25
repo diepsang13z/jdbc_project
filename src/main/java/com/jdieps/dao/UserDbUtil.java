@@ -10,20 +10,11 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import com.jdieps.constant.UserDbFieldConstant;
 import com.jdieps.model.EStatus;
 import com.jdieps.model.UserModel;
 
 public class UserDbUtil extends DbUtil {
-
-	private final String TABLE = "user";
-	private final String ID = "id";
-	private final String USERNAME = "username";
-	private final String PASSWOED = "password";
-	private final String FULLNAME = "fullname";
-	private final String EMAIL = "email";
-	private final String PHONE_NUMBER = "phoneNumber";
-	private final String STATUS = "status";
-	private final String ROLE_ID = "role_id";
 
 	public UserDbUtil(DataSource dataSource) {
 		super(dataSource);
@@ -43,7 +34,8 @@ public class UserDbUtil extends DbUtil {
 		try {
 			conn = super.mDataSource.getConnection();
 
-			String query = String.format("select * " + "from %s " + "where %s=? and %s=?", TABLE, EMAIL, PASSWOED);
+			String query = String.format("select * " + "from %s " + "where %s=? and %s=?", UserDbFieldConstant.TABLE,
+					UserDbFieldConstant.EMAIL, UserDbFieldConstant.PASSWOED);
 
 			preStmt = conn.prepareStatement(query);
 			preStmt.setString(1, email);
@@ -51,24 +43,64 @@ public class UserDbUtil extends DbUtil {
 
 			rs = preStmt.executeQuery();
 			while (rs.next()) {
-				long userId = rs.getLong("id");
-				String userName = rs.getString("username");
-				String userPassword = rs.getString("password");
-				String userFullname = rs.getString("fullname");
-				String userEmail = rs.getString("email");
-				String userPhoneNumber = rs.getString("phoneNumber");
+				long userId = rs.getLong(UserDbFieldConstant.ID);
+				String userName = rs.getString(UserDbFieldConstant.USERNAME);
+				String userPassword = rs.getString(UserDbFieldConstant.PASSWOED);
+				String userFullname = rs.getString(UserDbFieldConstant.FULLNAME);
+				String userEmail = rs.getString(UserDbFieldConstant.EMAIL);
+				String userPhoneNumber = rs.getString(UserDbFieldConstant.PHONE_NUMBER);
+				String userAdress = rs.getString(UserDbFieldConstant.ADDRESS);
 
-				int dbStatus = rs.getInt("status");
+				int dbStatus = rs.getInt(UserDbFieldConstant.STATUS);
 				EStatus userStatus = EStatus.findByValue(dbStatus);
 
-				long roleId = rs.getLong("role_id");
+				long roleId = rs.getLong(UserDbFieldConstant.ROLE_ID);
 
 				user = new UserModel(userId, userName, userPassword, userFullname, userEmail, userPhoneNumber,
-						userStatus, roleId);
+						userAdress, userStatus, roleId);
 			}
 
 		} finally {
 			close(conn, preStmt, rs);
+		}
+
+		return user;
+	}
+
+	public UserModel getUserById(long id) throws SQLException {
+		UserModel user = null;
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			String query = String.format("select * " + "from %s " + "where %s=%d", UserDbFieldConstant.TABLE,
+					UserDbFieldConstant.ID, id);
+
+			conn = super.mDataSource.getConnection();
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(query);
+
+			while (rs.next()) {
+				long userId = rs.getLong(UserDbFieldConstant.ID);
+				String userName = rs.getString(UserDbFieldConstant.USERNAME);
+				String userPassword = rs.getString(UserDbFieldConstant.PASSWOED);
+				String userFullname = rs.getString(UserDbFieldConstant.FULLNAME);
+				String userEmail = rs.getString(UserDbFieldConstant.EMAIL);
+				String userPhoneNumber = rs.getString(UserDbFieldConstant.PHONE_NUMBER);
+				String userAdress = rs.getString(UserDbFieldConstant.ADDRESS);
+
+				int dbStatus = rs.getInt(UserDbFieldConstant.STATUS);
+				EStatus userStatus = EStatus.findByValue(dbStatus);
+
+				long roleId = rs.getLong(UserDbFieldConstant.ROLE_ID);
+
+				user = new UserModel(userId, userName, userPassword, userFullname, userEmail, userPhoneNumber,
+						userAdress, userStatus, roleId);
+			}
+
+		} finally {
+			close(conn, stmt, rs);
 		}
 
 		return user;
@@ -81,27 +113,29 @@ public class UserDbUtil extends DbUtil {
 		ResultSet rs = null;
 
 		try {
-			String query = String.format("select * " + "from %s " + "where %s='%s'", TABLE, USERNAME, username);
+			String query = String.format("select * " + "from %s " + "where %s='%s'", UserDbFieldConstant.TABLE,
+					UserDbFieldConstant.USERNAME, username);
 
 			conn = super.mDataSource.getConnection();
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(query);
 
 			while (rs.next()) {
-				long userId = rs.getLong("id");
-				String userName = rs.getString("username");
-				String userPassword = rs.getString("password");
-				String userFullname = rs.getString("fullname");
-				String userEmail = rs.getString("email");
-				String userPhoneNumber = rs.getString("phoneNumber");
+				long userId = rs.getLong(UserDbFieldConstant.ID);
+				String userName = rs.getString(UserDbFieldConstant.USERNAME);
+				String userPassword = rs.getString(UserDbFieldConstant.PASSWOED);
+				String userFullname = rs.getString(UserDbFieldConstant.FULLNAME);
+				String userEmail = rs.getString(UserDbFieldConstant.EMAIL);
+				String userPhoneNumber = rs.getString(UserDbFieldConstant.PHONE_NUMBER);
+				String userAdress = rs.getString(UserDbFieldConstant.ADDRESS);
 
-				int dbStatus = rs.getInt("status");
+				int dbStatus = rs.getInt(UserDbFieldConstant.STATUS);
 				EStatus userStatus = EStatus.findByValue(dbStatus);
 
-				long roleId = rs.getLong("role_id");
+				long roleId = rs.getLong(UserDbFieldConstant.ROLE_ID);
 
 				user = new UserModel(userId, userName, userPassword, userFullname, userEmail, userPhoneNumber,
-						userStatus, roleId);
+						userAdress, userStatus, roleId);
 			}
 
 		} finally {
@@ -118,27 +152,29 @@ public class UserDbUtil extends DbUtil {
 		ResultSet rs = null;
 
 		try {
-			String query = String.format("select * " + "from %s " + "where %s='%s'", TABLE, EMAIL, email);
+			String query = String.format("select * " + "from %s " + "where %s='%s'", UserDbFieldConstant.TABLE,
+					UserDbFieldConstant.EMAIL, email);
 
 			conn = super.mDataSource.getConnection();
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(query);
 
 			while (rs.next()) {
-				long userId = rs.getLong("id");
-				String userName = rs.getString("username");
-				String userPassword = rs.getString("password");
-				String userFullname = rs.getString("fullname");
-				String userEmail = rs.getString("email");
-				String userPhoneNumber = rs.getString("phoneNumber");
+				long userId = rs.getLong(UserDbFieldConstant.ID);
+				String userName = rs.getString(UserDbFieldConstant.USERNAME);
+				String userPassword = rs.getString(UserDbFieldConstant.PASSWOED);
+				String userFullname = rs.getString(UserDbFieldConstant.FULLNAME);
+				String userEmail = rs.getString(UserDbFieldConstant.EMAIL);
+				String userPhoneNumber = rs.getString(UserDbFieldConstant.PHONE_NUMBER);
+				String userAdress = rs.getString(UserDbFieldConstant.ADDRESS);
 
-				int dbStatus = rs.getInt("status");
+				int dbStatus = rs.getInt(UserDbFieldConstant.STATUS);
 				EStatus userStatus = EStatus.findByValue(dbStatus);
 
-				long roleId = rs.getLong("role_id");
+				long roleId = rs.getLong(UserDbFieldConstant.ROLE_ID);
 
 				user = new UserModel(userId, userName, userPassword, userFullname, userEmail, userPhoneNumber,
-						userStatus, roleId);
+						userAdress, userStatus, roleId);
 			}
 
 		} finally {
@@ -157,7 +193,9 @@ public class UserDbUtil extends DbUtil {
 			conn = super.mDataSource.getConnection();
 
 			String query = String.format("insert into %s(%s, %s, %s, %s, %s, %s, %s) values(?, ?, ?, ?, ?, ?, ?)",
-					TABLE, USERNAME, PASSWOED, FULLNAME, EMAIL, PHONE_NUMBER, STATUS, ROLE_ID);
+					UserDbFieldConstant.TABLE, UserDbFieldConstant.USERNAME, UserDbFieldConstant.PASSWOED,
+					UserDbFieldConstant.FULLNAME, UserDbFieldConstant.EMAIL, UserDbFieldConstant.PHONE_NUMBER,
+					UserDbFieldConstant.STATUS, UserDbFieldConstant.ROLE_ID);
 
 			preStmt = conn.prepareStatement(query);
 

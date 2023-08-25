@@ -8,28 +8,33 @@ public class UserModel {
 	private String fullname;
 	private String email;
 	private String phoneNumber;
+	private String address;
 	private EStatus status;
 	private long roleId;
 
 	public UserModel(String username, String password, String fullname, String email, String phoneNumber,
-			EStatus status, long roleId) {
+			String address, EStatus status, long roleId) {
+		super();
 		this.username = username;
 		this.password = password;
 		this.fullname = fullname;
 		this.email = email;
 		this.phoneNumber = phoneNumber;
+		this.address = address;
 		this.status = status;
 		this.roleId = roleId;
 	}
 
 	public UserModel(long id, String username, String password, String fullname, String email, String phoneNumber,
-			EStatus status, long roleId) {
+			String address, EStatus status, long roleId) {
+		super();
 		this.id = id;
 		this.username = username;
 		this.password = password;
 		this.fullname = fullname;
 		this.email = email;
 		this.phoneNumber = phoneNumber;
+		this.address = address;
 		this.status = status;
 		this.roleId = roleId;
 	}
@@ -82,6 +87,14 @@ public class UserModel {
 		this.phoneNumber = phoneNumber;
 	}
 
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
 	public EStatus getStatus() {
 		return status;
 	}
@@ -94,7 +107,7 @@ public class UserModel {
 		return roleId;
 	}
 
-	public void setRole(long roleId) {
+	public void setRoleId(long roleId) {
 		this.roleId = roleId;
 	}
 

@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
-import com.jdieps.constant.ErrorMessageConstant;
+import com.jdieps.constant.NotificationMessageConstant;
 import com.jdieps.dao.RoleDbUtil;
 import com.jdieps.dao.UserDbUtil;
 import com.jdieps.model.ERole;
@@ -75,31 +75,38 @@ public class RegisterController extends HttpServlet {
 		boolean isRequired = isRequired(emailParam, fullnameParam, usernameParam, passwordParam, confirmPasswordParam,
 				phoneNumberParam);
 		if (!isRequired) {
-			ServletUtil.forwardWithMessage(req, resp, REGISTER_PAGE, ErrorMessageConstant.MISSING_DATA);
+			ServletUtil.forwardWithMessage(req, resp, REGISTER_PAGE, NotificationMessageConstant.MISSING_DATA);
 		}
 
 		boolean isMatch = checkConfirmPassword(passwordParam, confirmPasswordParam);
 		if (!isMatch) {
-			ServletUtil.forwardWithMessage(req, resp, REGISTER_PAGE, ErrorMessageConstant.CONFIMN_PASSWORD_NOT_MATCH);
+			ServletUtil.forwardWithMessage(req, resp, REGISTER_PAGE, NotificationMessageConstant.CONFIMN_PASSWORD_NOT_MATCH);
 		}
 
 		boolean isUserNameExsited = checkUserNameExsited(usernameParam);
 		boolean isEmailExsited = checkEmailExsited(usernameParam);
 		if (isUserNameExsited || isEmailExsited) {
-			ServletUtil.forwardWithMessage(req, resp, REGISTER_PAGE, ErrorMessageConstant.USER_EXISTED);
+			ServletUtil.forwardWithMessage(req, resp, REGISTER_PAGE, NotificationMessageConstant.USER_EXISTED);
 		}
 
+		String userAddress = null;
+		
+		EStatus userStatus = EStatus.ACTIVE;
+		
 		String roleName = ERole.USER.name();
 		RoleModel role = mRoleDbUtil.getRoleByName(roleName);
 		long userRoleId = role.getId();
 
-		EStatus userStatus = EStatus.ACTIVE;
-
 		UserModel newUser = new UserModel(usernameParam, passwordParam, fullnameParam, emailParam, phoneNumberParam,
-				userStatus, userRoleId);
-		mUserDbUtil.createUser(newUser);
+				userAddress, userStatus, userRoleId);
+		
+		try {			
+			mUserDbUtil.createUser(newUser);
+			ServletUtil.forwardWithMessage(req, resp, REGISTER_PAGE, NotificationMessageConstant.REGISTER_SUCCESS);
+		} catch (Exception e) {
+			ServletUtil.forwardWithMessage(req, resp, REGISTER_PAGE, NotificationMessageConstant.REGISTER_NOT_SUCCESS);
+		}
 
-		ServletUtil.forwardWithMessage(req, resp, REGISTER_PAGE, "Success");
 	}
 
 	// PRIVATE
