@@ -4,13 +4,11 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import javax.annotation.Resource;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 import com.jdieps.constant.ErrorMessageConstant;
@@ -19,6 +17,7 @@ import com.jdieps.dao.UserDbUtil;
 import com.jdieps.model.ERole;
 import com.jdieps.model.RoleModel;
 import com.jdieps.model.UserModel;
+import com.jdieps.util.ServletUtil;
 
 @WebServlet(urlPatterns = { "/login" })
 public class LoginController extends HttpServlet {
@@ -53,12 +52,18 @@ public class LoginController extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		req.setCharacterEncoding("utf-8");
 		processLogin(req, resp);
 	}
 
 	protected void processLogin(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String emailParam = req.getParameter("email");
 		String passwordParam = req.getParameter("password");
+
+		boolean isRequired = isRequired(emailParam, passwordParam);
+		if (!isRequired) {
+			ServletUtil.forwardWithMessage(req, resp, LOGIN_PAGE, ErrorMessageConstant.MISSING_DATA);
+		}
 
 		try {
 			UserModel user = mUserDbUtil.getUserByEmailAndPass(emailParam, passwordParam);
@@ -77,10 +82,7 @@ public class LoginController extends HttpServlet {
 				}
 
 			} else {
-				HttpSession session = req.getSession();
-				session.setAttribute("message", ErrorMessageConstant.USER_NOT_FOUND);
-				RequestDispatcher rd = req.getRequestDispatcher(LOGIN_PAGE);
-				rd.forward(req, resp);
+				ServletUtil.forwardWithMessage(req, resp, LOGIN_PAGE, ErrorMessageConstant.USER_NOT_FOUND);
 			}
 
 		} catch (SQLException e) {
@@ -88,5 +90,11 @@ public class LoginController extends HttpServlet {
 		}
 
 	}
+
+	// PRIVATE
+	private boolean isRequired(String emailParam, String passwordParam) {
+		return emailParam != null && passwordParam != null;
+	}
+
 
 }

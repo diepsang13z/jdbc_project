@@ -19,7 +19,125 @@
 
 </head>
 <body>
-	<main class="p-4">
+	<main class="px-4">
+		<div class="add-user py-4">
+			<button
+				type="button"
+				class="btn btn-success"
+				data-bs-toggle="modal"
+				data-bs-target="#create_user_form">Thêm mới</button>
+
+			<!-- Modal -->
+			<div
+				class="modal fade"
+				id="create_user_form"
+				data-bs-backdrop="static"
+				data-bs-keyboard="false"
+				tabindex="-1"
+				aria-labelledby="staticBackdropLabel"
+				aria-hidden="true">
+				<div class="modal-dialog modal-xl">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h1
+								class="modal-title fs-5"
+								id="staticBackdropLabel">Thêm mới</h1>
+							<button
+								type="button"
+								class="btn-close"
+								data-bs-dismiss="modal"
+								aria-label="Close"></button>
+						</div>
+						<form
+							action="${context}/admin-home"
+							method="post">
+							
+							<!-- COMMAND -->
+							<input
+								type="hidden"
+								name="command"
+								value="CREATE">
+							
+							<!-- INFO -->
+							<div class="modal-body">
+								<div class="row row-cols-2">
+									<div class="col">
+										<label class="form-label">Họ và tên</label>
+										<input
+											type="text"
+											name="fullname"
+											class="form-control">
+									</div>
+
+									<div class="col">
+										<label class="form-label">Email</label>
+										<input
+											type="email"
+											name="email"
+											class="form-control">
+									</div>
+
+									<div class="col">
+										<label class="form-label">Số điện thoại</label>
+										<input
+											type="text"
+											name="phone"
+											class="form-control">
+									</div>
+
+									<div class="col">
+										<label class="form-label">Địa chỉ</label>
+										<input
+											type="text"
+											name="address"
+											class="form-control">
+									</div>
+
+									<div class="col">
+										<label class="form-label">Tài khoản</label>
+										<input
+											type="text"
+											name="username"
+											class="form-control">
+									</div>
+
+									<div class="col">
+										<label class="form-label">Mật khẩu</label>
+										<input
+											type="password"
+											name="password"
+											class="form-control">
+									</div>
+
+									<div class="col">
+										<label class="form-label"></label>
+										<select class="form-select">
+											<option selected>Chọn loại vai trò</option>
+											<option value="admin">Admin</option>
+											<option value="user">User</option>
+										</select>
+									</div>
+
+								</div>
+							</div>
+							
+							<!-- SUBMIT -->
+							<div class="modal-footer">
+								<button
+									type="button"
+									class="btn btn-secondary"
+									data-bs-dismiss="modal">Đóng</button>
+								<input
+									type="submit"
+									value="Lưu"
+									class="btn btn-primary">
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<!-- Show user -->
 		<div class="dropdown pb-4">
 			<div class="row g-0">

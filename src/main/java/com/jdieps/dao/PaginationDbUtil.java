@@ -14,17 +14,37 @@ import com.jdieps.model.UserModel;
 
 public class PaginationDbUtil extends DbUtil {
 
-	private int mTotalpage;
 	private int mNumberEntriesPerPage;
 
 	public PaginationDbUtil(DataSource dataSource, int numberEntriesPerPage) throws SQLException {
 		super(dataSource);
 		mNumberEntriesPerPage = numberEntriesPerPage;
-		mTotalpage = getMTotalPage();
 	}
 
-	public int getTotalPage() {
-		return mTotalpage;
+	public int getTotalPage() throws SQLException {
+		int countPage = 0;
+		Connection conn = null;
+		PreparedStatement preStmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = mDataSource.getConnection();
+			String query = "select count(*) from user";
+
+			preStmt = conn.prepareStatement(query);
+			rs = preStmt.executeQuery();
+
+			while (rs.next()) {
+				int total = rs.getInt(1);
+				countPage = (total % mNumberEntriesPerPage != 0) ? (total / mNumberEntriesPerPage) + 1
+						: (total / mNumberEntriesPerPage);
+			}
+
+		} finally {
+			close(conn, preStmt, rs);
+		}
+
+		return countPage;
 	}
 
 	public List<UserModel> getEntriesPerPage(int pageNumber) throws SQLException {
@@ -59,8 +79,8 @@ public class PaginationDbUtil extends DbUtil {
 
 				long roleId = rs.getLong("role_id");
 
-				UserModel user = new UserModel(userId, userName, userPwd, userFullname, userEmail, userPhoneNumber, userStatus,
-						roleId);
+				UserModel user = new UserModel(userId, userName, userPwd, userFullname, userEmail, userPhoneNumber,
+						userStatus, roleId);
 
 				entries.add(user);
 			}
@@ -72,30 +92,4 @@ public class PaginationDbUtil extends DbUtil {
 		return entries;
 	}
 
-	// PRIVATE
-	private int getMTotalPage() throws SQLException {
-		int countPage = 0;
-		Connection conn = null;
-		PreparedStatement preStmt = null;
-		ResultSet rs = null;
-
-		try {
-			conn = mDataSource.getConnection();
-			String query = "select count(*) from user";
-
-			preStmt = conn.prepareStatement(query);
-			rs = preStmt.executeQuery();
-
-			while (rs.next()) {
-				int total = rs.getInt(1);
-				countPage = (total % mNumberEntriesPerPage != 0) ? (total / mNumberEntriesPerPage) + 1
-						: (total / mNumberEntriesPerPage);
-			}
-
-		} finally {
-			close(conn, preStmt, rs);
-		}
-
-		return countPage;
-	}
 }

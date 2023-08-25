@@ -13,14 +13,12 @@ import javax.sql.DataSource;
 
 import com.jdieps.constant.AdminAttrConstant;
 import com.jdieps.dao.PaginationDbUtil;
-import com.jdieps.dao.RoleDbUtil;
-import com.jdieps.model.RoleModel;
 import com.jdieps.model.UserModel;
 
 public class PaginationService {
 
 	private PaginationDbUtil mPaginationDbUtil;
-	
+
 	private int mPageControl;
 	private String mView;
 
@@ -34,7 +32,7 @@ public class PaginationService {
 			throws ServletException, IOException, SQLException {
 		int totalPage = mPaginationDbUtil.getTotalPage();
 		List<UserModel> entries = mPaginationDbUtil.getEntriesPerPage(mPageControl);
-		
+
 		HttpSession session = req.getSession();
 		session.setAttribute(AdminAttrConstant.TOTAL_PAGE, totalPage);
 		session.setAttribute(AdminAttrConstant.CURRENT_PAGE, mPageControl);
@@ -50,4 +48,5 @@ public class PaginationService {
 		mPageControl = page;
 		listUser(req, resp);
 	}
+
 }

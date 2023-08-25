@@ -1,6 +1,7 @@
 package com.jdieps.controller.admin;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +47,7 @@ public class HomeController extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		req.setCharacterEncoding("utf-8");
 		actionCommand(req, resp);
 	}
 
@@ -77,9 +79,15 @@ public class HomeController extends HttpServlet {
 				throw new RuntimeException("ERROR: listUser method in Pagination Service!", e);
 			}
 		});
+		
+		mCommandAction.put("CREATE", (req, resp) -> {
+			processCreateRequest(req, resp);
+			
+		});
 
 	}
-
+	
+	// PRIVATE
 	private void actionCommand(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		try {
 			String command = req.getParameter("command");
@@ -93,6 +101,10 @@ public class HomeController extends HttpServlet {
 		} catch (Exception e) {
 			throw new ServletException("ERROR in actionCommand method", e);
 		}
+	}
+	
+	private void processCreateRequest(HttpServletRequest req, HttpServletResponse resp) {
+		
 	}
 
 }

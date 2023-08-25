@@ -24,7 +24,7 @@ alter table user add constraint fk_user_role
 foreign key(role_id) references role(id);
 
 insert into role(id, role) values
-(1, "admin"), (2, "user");
+(1, "ADMIN"), (2, "USER");
 select * from role;
 
 
