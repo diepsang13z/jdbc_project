@@ -184,6 +184,74 @@ public class UserDbUtil extends DbUtil {
 		return user;
 	}
 
+	public int getCountUser() throws SQLException {
+		int total = 0;
+		Connection conn = null;
+		PreparedStatement preStmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = mDataSource.getConnection();
+			String query = "select count(*) from " + UserDbFieldConstant.TABLE;
+
+			preStmt = conn.prepareStatement(query);
+			rs = preStmt.executeQuery();
+
+			while (rs.next()) {
+				total = rs.getInt(1);
+			}
+
+		} finally {
+			close(conn, preStmt, rs);
+		}
+
+		return total;
+	}
+
+	public List<UserModel> getUserWithLimmitOffset(int limit, int offset) throws SQLException {
+		List<UserModel> entries = new ArrayList<>();
+		Connection conn = null;
+		PreparedStatement preStmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = mDataSource.getConnection();
+			String query = String.format("select * from %s " + "order by %s " + "limit ?, ?",
+					UserDbFieldConstant.TABLE, UserDbFieldConstant.ID);
+
+			preStmt = conn.prepareStatement(query);
+			preStmt.setInt(1, offset);
+			preStmt.setInt(2, limit);
+
+			rs = preStmt.executeQuery();
+
+			while (rs.next()) {
+				long userId = rs.getLong(UserDbFieldConstant.ID);
+				String userName = rs.getString(UserDbFieldConstant.USERNAME);
+				String userPassword = rs.getString(UserDbFieldConstant.PASSWOED);
+				String userFullname = rs.getString(UserDbFieldConstant.FULLNAME);
+				String userEmail = rs.getString(UserDbFieldConstant.EMAIL);
+				String userPhoneNumber = rs.getString(UserDbFieldConstant.PHONE_NUMBER);
+				String userAdress = rs.getString(UserDbFieldConstant.ADDRESS);
+
+				int dbStatus = rs.getInt(UserDbFieldConstant.STATUS);
+				EStatus userStatus = EStatus.findByValue(dbStatus);
+
+				long roleId = rs.getLong(UserDbFieldConstant.ROLE_ID);
+
+				UserModel user = new UserModel(userId, userName, userPassword, userFullname, userEmail, userPhoneNumber,
+						userAdress, userStatus, roleId);
+
+				entries.add(user);
+			}
+
+		} finally {
+			close(conn, preStmt, rs);
+		}
+
+		return entries;
+	}
+
 	public void createUser(UserModel user) throws SQLException {
 		Connection conn = null;
 		PreparedStatement preStmt = null;
@@ -313,11 +381,11 @@ public class UserDbUtil extends DbUtil {
 			String query = String.format("select * from %s where %s like ? or %s like ?",
 					UserDbFieldConstant.TABLE, UserDbFieldConstant.EMAIL, UserDbFieldConstant.PHONE_NUMBER);
 			preStmt = conn.prepareStatement(query);
-			
+
 			String condition = "%" + content + "%";
 			preStmt.setString(1, condition);
 			preStmt.setString(2, condition);
-			
+
 			rs = preStmt.executeQuery();
 			while (rs.next()) {
 				long userId = rs.getLong(UserDbFieldConstant.ID);

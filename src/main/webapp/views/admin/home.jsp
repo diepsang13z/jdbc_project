@@ -260,13 +260,6 @@
 						</c:choose>
 						<td>
 							<div class="row row-cols-3 text-center m-1">
-								<!-- Gửi -->
-								<div class="p-1">
-									<a
-										href="#"
-										class="w-100 col btn btn-success">Gửi</a>
-								</div>
-
 								<!-- Sửa -->
 								<div class="p-1">
 									<button

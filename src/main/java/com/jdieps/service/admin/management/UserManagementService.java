@@ -1,15 +1,12 @@
-package com.jdieps.service.admin;
+package com.jdieps.service.admin.management;
 
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
-import com.jdieps.constant.AdminAttrConstant;
 import com.jdieps.constant.NotificationMessageConstant;
 import com.jdieps.dao.RoleDbUtil;
 import com.jdieps.dao.UserDbUtil;
@@ -129,7 +126,7 @@ public class UserManagementService {
 			ServletUtil.setSessionMessage(req, resp, NotificationMessageConstant.NOT_SUCCESS);
 		}
 	}
-	
+
 
 	public List<UserModel> searchUserByEmailOrPhoneNumber(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
 		String searchContentParam = req.getParameter("search_content");

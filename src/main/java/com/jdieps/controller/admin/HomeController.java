@@ -15,8 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import com.jdieps.model.UserModel;
-import com.jdieps.service.admin.PaginationService;
-import com.jdieps.service.admin.UserManagementService;
+import com.jdieps.service.admin.management.UserManagementService;
+import com.jdieps.service.admin.pagination.UserPaginationService;
 
 @WebServlet(urlPatterns = { "/admin-home" })
 public class HomeController extends HttpServlet {
@@ -29,7 +29,7 @@ public class HomeController extends HttpServlet {
 	@Resource(name = "jdbc/jdbc_project")
 	private DataSource mDataSource;
 
-	private PaginationService mPaginationService;
+	private UserPaginationService mUserPaginationService;
 	private UserManagementService mUserManagementService;
 
 	private Map<String, ProcessingMethod> mCommandAction;
@@ -39,7 +39,7 @@ public class HomeController extends HttpServlet {
 		super.init();
 
 		try {
-			mPaginationService = new PaginationService(mDataSource, NUMBER_ENTRIES_PER_PAGE, VIEW_PATH);
+			mUserPaginationService = new UserPaginationService(mDataSource, NUMBER_ENTRIES_PER_PAGE, VIEW_PATH);
 			mUserManagementService = new UserManagementService(mDataSource);
 		} catch (SQLException e) {
 			throw new ServletException("Error initializing PaginationService", e);
@@ -71,7 +71,7 @@ public class HomeController extends HttpServlet {
 
 		mCommandAction.put("LIST", (req, resp) -> {
 			try {
-				mPaginationService.listUser(req, resp);
+				mUserPaginationService.listUser(req, resp);
 			} catch (ServletException | IOException | SQLException e) {
 				throw new RuntimeException("ERROR: listUser method in PaginationService!", e);
 			}
@@ -79,7 +79,7 @@ public class HomeController extends HttpServlet {
 
 		mCommandAction.put("CHANGE_PAGE", (req, resp) -> {
 			try {
-				mPaginationService.changePage(req, resp);
+				mUserPaginationService.changePage(req, resp);
 			} catch (ServletException | IOException | SQLException e) {
 				throw new RuntimeException("ERROR: listUser method in PaginationService!", e);
 			}
@@ -129,18 +129,18 @@ public class HomeController extends HttpServlet {
 			}
 			mCommandAction.get("LIST").method(req, resp);
 		});
-		
+
 		mCommandAction.put("SEARCH", (req, resp) -> {
 			List<UserModel> userList = null;
-			
+
 			try {
 				userList = mUserManagementService.searchUserByEmailOrPhoneNumber(req, resp);
 			} catch (SQLException e) {
 				throw new RuntimeException("ERROR: searchUserByEmailOrPhoneNumber method in UserManagementService!", e);
 			}
-			
+
 			try {
-				mPaginationService.listUser(req, resp, userList);
+				mUserPaginationService.listUser(req, resp, userList);
 			} catch (ServletException | IOException | SQLException e) {
 				throw new RuntimeException("ERROR: listUser method in PaginationService!", e);
 			}
