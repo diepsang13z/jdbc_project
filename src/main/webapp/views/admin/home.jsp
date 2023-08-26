@@ -193,16 +193,26 @@
 								});
 					</script>
 				</div>
+
+				<!-- Search bars -->
 				<div class="col-6 col-md-4">
 					<form
 						id="search_form"
-						action="/"
+						action="${context}/admin-home"
 						method="get">
+
+						<input
+							type="hidden"
+							name="command"
+							value="SEARCH">
+
 						<input
 							id="search"
+							name="search_content"
 							class="form-control"
 							type="text"
 							placeholder="Search">
+
 					</form>
 				</div>
 			</div>
@@ -494,7 +504,7 @@
 												class="w-100 col btn btn-danger">Khóa</a>
 										</div>
 									</c:when>
-									
+
 									<c:when test="${entry.status eq 'LOCK'}">
 										<!-- Mở -->
 										<div class="p-1">

@@ -26,7 +26,7 @@ public class RegisterController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private final String REGISTER_PAGE = "/views/web/register.jsp";
 
-	@Resource(name = "jdbc/jdbc_project1")
+	@Resource(name = "jdbc/jdbc_project")
 	private DataSource mDataSource;
 
 	private UserDbUtil mUserDbUtil;

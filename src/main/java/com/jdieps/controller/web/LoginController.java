@@ -29,7 +29,7 @@ public class LoginController extends HttpServlet {
 	private final String USER_PAGE = "/home";
 	private final String LOGIN_PAGE = "/views/web/login.jsp";
 
-	@Resource(name = "jdbc/jdbc_project1")
+	@Resource(name = "jdbc/jdbc_project")
 	private DataSource mDataSource;
 
 	private UserDbUtil mUserDbUtil;

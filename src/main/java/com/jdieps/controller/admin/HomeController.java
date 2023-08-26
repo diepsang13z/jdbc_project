@@ -24,7 +24,7 @@ public class HomeController extends HttpServlet {
 
 	private final String VIEW_PATH = "/views/admin/home.jsp";
 
-	@Resource(name = "jdbc/jdbc_project1")
+	@Resource(name = "jdbc/jdbc_project")
 	private DataSource mDataSource;
 
 	private PaginationService mPaginationService;
