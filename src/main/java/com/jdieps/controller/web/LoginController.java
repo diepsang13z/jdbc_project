@@ -15,6 +15,7 @@ import com.jdieps.constant.NotificationMessageConstant;
 import com.jdieps.dao.RoleDbUtil;
 import com.jdieps.dao.UserDbUtil;
 import com.jdieps.model.ERole;
+import com.jdieps.model.EStatus;
 import com.jdieps.model.RoleModel;
 import com.jdieps.model.UserModel;
 import com.jdieps.util.ServletUtil;
@@ -68,21 +69,26 @@ public class LoginController extends HttpServlet {
 		try {
 			UserModel user = mUserDbUtil.getUserByEmailAndPass(emailParam, passwordParam);
 
-			if (user != null) {
-				long roleID = user.getRoleId();
-				RoleModel role = mRoleDbUtil.getRoleById(roleID);
-				String roleName = role.getName().toUpperCase();
-
-				if (roleName.equals(ERole.ADMIN.name())) {
-					String path = req.getContextPath() + ADMIN_PAGE;
-					resp.sendRedirect(path);
-				} else if (roleName.equals(ERole.USER.name())) {
-					String path = req.getContextPath() + USER_PAGE;
-					resp.sendRedirect(path);
-				}
-
-			} else {
+			if (user == null) {
 				ServletUtil.forwardWithMessage(req, resp, LOGIN_PAGE, NotificationMessageConstant.USER_NOT_FOUND);
+			}
+
+			int userStatus = user.getStatus().getValue();
+			int lockStatus = EStatus.LOCK.getValue();
+			if (userStatus == lockStatus) {
+				ServletUtil.forwardWithMessage(req, resp, LOGIN_PAGE, NotificationMessageConstant.LOCKED_ACCOUNT);
+			}
+
+			long roleID = user.getRoleId();
+			RoleModel role = mRoleDbUtil.getRoleById(roleID);
+			String roleName = role.getName().toUpperCase();
+
+			if (roleName.equals(ERole.ADMIN.name())) {
+				String path = req.getContextPath() + ADMIN_PAGE;
+				resp.sendRedirect(path);
+			} else if (roleName.equals(ERole.USER.name())) {
+				String path = req.getContextPath() + USER_PAGE;
+				resp.sendRedirect(path);
 			}
 
 		} catch (SQLException e) {
@@ -95,6 +101,5 @@ public class LoginController extends HttpServlet {
 	private boolean isRequired(String emailParam, String passwordParam) {
 		return emailParam != null && passwordParam != null;
 	}
-
 
 }

@@ -1,12 +1,9 @@
 package com.jdieps.service.admin;
 
-import java.io.IOException;
 import java.sql.SQLException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 import com.jdieps.constant.NotificationMessageConstant;
@@ -28,8 +25,6 @@ public class UserManagementService {
 	}
 
 	public void addUser(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
-		HttpSession session = req.getSession();
-
 		String usernameParam = req.getParameter("username");
 		String passwordParam = req.getParameter("password");
 		String fullnameParam = req.getParameter("fullname");
@@ -38,10 +33,17 @@ public class UserManagementService {
 		String addressParam = req.getParameter("address");
 		String roleParam = req.getParameter("role");
 
+		boolean isRequired = isCreateUserRequired(usernameParam, passwordParam, fullnameParam, emailParam, addressParam,
+				roleParam);
+		if (!isRequired) {
+			ServletUtil.setSessionMessage(req, resp, NotificationMessageConstant.MISSING_DATA);
+			return;
+		}
+
 		boolean isUserNameExsited = checkUserNameExsited(usernameParam);
 		boolean isEmailExsited = checkEmailExsited(emailParam);
 		if (isUserNameExsited || isEmailExsited) {
-			session.setAttribute("message", NotificationMessageConstant.USER_EXISTED);
+			ServletUtil.setSessionMessage(req, resp, NotificationMessageConstant.USER_EXISTED);
 			return;
 		}
 
@@ -61,10 +63,63 @@ public class UserManagementService {
 
 	}
 
+	public void updateUser(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
+		String idParam = req.getParameter("id");
+		String fullnameParam = req.getParameter("fullname");
+		String emailParam = req.getParameter("email");
+		String phoneNumberParam = req.getParameter("phone_number");
+		String addressParam = req.getParameter("address");
+		String usernameParam = req.getParameter("username");
+		String roleParam = req.getParameter("role");
+
+		boolean isRequired = isUpdateUserRequired(idParam, fullnameParam, emailParam, phoneNumberParam, addressParam,
+				usernameParam, roleParam);
+		if (!isRequired) {
+			ServletUtil.setSessionMessage(req, resp, NotificationMessageConstant.MISSING_DATA);
+			return;
+		}
+
+		long userId = Integer.parseInt(idParam);
+		RoleModel userRole = mRoleDbUtil.getRoleByName(roleParam);
+		long userRoleId = userRole.getId();
+
+		try {
+			mUserDbUtil.updateUser(userId, fullnameParam, emailParam, phoneNumberParam, addressParam, usernameParam,
+					userRoleId);
+			ServletUtil.setSessionMessage(req, resp, NotificationMessageConstant.SUCCESS);
+		} catch (Exception e) {
+			ServletUtil.setSessionMessage(req, resp, NotificationMessageConstant.NOT_SUCCESS);
+		}
+
+	}
+
 	public void deleteUser(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
 		String idParam = req.getParameter("userId");
+		long userId = Integer.parseInt(idParam);
 		try {
-			mUserDbUtil.deleteUserById(idParam);
+			mUserDbUtil.deleteUser(userId);
+			ServletUtil.setSessionMessage(req, resp, NotificationMessageConstant.SUCCESS);
+		} catch (Exception e) {
+			ServletUtil.setSessionMessage(req, resp, NotificationMessageConstant.NOT_SUCCESS);
+		}
+	}
+
+	public void lockUser(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
+		String idParam = req.getParameter("userId");
+		long userId = Integer.parseInt(idParam);
+		try {
+			mUserDbUtil.lockUser(userId);
+			ServletUtil.setSessionMessage(req, resp, NotificationMessageConstant.SUCCESS);
+		} catch (Exception e) {
+			ServletUtil.setSessionMessage(req, resp, NotificationMessageConstant.NOT_SUCCESS);
+		}
+	}
+
+	public void activeUser(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
+		String idParam = req.getParameter("userId");
+		long userId = Integer.parseInt(idParam);
+		try {
+			mUserDbUtil.activeUser(userId);
 			ServletUtil.setSessionMessage(req, resp, NotificationMessageConstant.SUCCESS);
 		} catch (Exception e) {
 			ServletUtil.setSessionMessage(req, resp, NotificationMessageConstant.NOT_SUCCESS);
@@ -72,6 +127,18 @@ public class UserManagementService {
 	}
 
 	// PRIVATE
+	private boolean isCreateUserRequired(String username, String password, String fullname, String email,
+			String address, String role) {
+		return username != null && password != null && fullname != null && email != null && address != null
+				&& role != null;
+	}
+
+	private boolean isUpdateUserRequired(String id, String fullname, String email, String phoneNumber, String address,
+			String username, String role) {
+		return id != null && fullname != null && email != null && phoneNumber != null && address != null
+				&& username != null && role != null;
+	}
+
 	private boolean checkUserNameExsited(String username) throws SQLException {
 		return mUserDbUtil.getUserByUserName(username) != null;
 	}

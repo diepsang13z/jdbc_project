@@ -67,6 +67,8 @@
                 <a href="${webviews}/register.jsp">Sing up now</a>
             </div>
         </div>
+        
+        <div>${message}</div>
     </div>
 
 	<!-- footer -->

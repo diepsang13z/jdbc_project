@@ -213,18 +213,86 @@ public class UserDbUtil extends DbUtil {
 			close(conn, preStmt, null);
 		}
 	}
-	
-	public void deleteUserById(String id) throws SQLException {
+
+	public void updateUser(long userId, String newFullName, String newEmail, String newPhoneNumber, String newAddress,
+			String newUserName, long newRoleId) throws SQLException {
+		Connection conn = null;
+		PreparedStatement preStmt = null;
+
+		try {
+			conn = super.mDataSource.getConnection();
+
+			String query = String.format(
+					"update %s " + "set %s=?, %s=?, %s=?, %s=?, %s=?, %s=? " + "where %s=" + userId,
+					UserDbFieldConstant.TABLE, UserDbFieldConstant.FULLNAME, UserDbFieldConstant.EMAIL,
+					UserDbFieldConstant.PHONE_NUMBER, UserDbFieldConstant.ADDRESS, UserDbFieldConstant.USERNAME,
+					UserDbFieldConstant.ROLE_ID, UserDbFieldConstant.ID);
+
+			preStmt = conn.prepareStatement(query);
+
+			int index = 1;
+			preStmt.setString(index++, newFullName);
+			preStmt.setString(index++, newEmail);
+			preStmt.setString(index++, newPhoneNumber);
+			preStmt.setString(index++, newAddress);
+			preStmt.setString(index++, newUserName);
+			preStmt.setLong(index++, newRoleId);
+
+			preStmt.execute();
+
+		} finally {
+			close(conn, preStmt, null);
+		}
+	}
+
+	public void deleteUser(long userId) throws SQLException {
 		Connection conn = null;
 		Statement stmt = null;
 
 		try {
 			conn = super.mDataSource.getConnection();
-			
-			long userId = Integer.parseInt(id);
-			String query = String.format("delete from %s where %s=%d",
-					UserDbFieldConstant.TABLE, UserDbFieldConstant.ID, userId);
-			
+
+			String query = String.format("delete from %s where %s=%d", UserDbFieldConstant.TABLE,
+					UserDbFieldConstant.ID, userId);
+
+			stmt = conn.createStatement();
+			stmt.execute(query);
+
+		} finally {
+			close(conn, stmt, null);
+		}
+	}
+
+	public void lockUser(long userId) throws SQLException {
+		Connection conn = null;
+		Statement stmt = null;
+
+		try {
+			conn = super.mDataSource.getConnection();
+
+			int lockStatus = EStatus.LOCK.getValue();
+			String query = String.format("update %s " + "set %s=" + lockStatus + " where %s=" + userId,
+					UserDbFieldConstant.TABLE, UserDbFieldConstant.STATUS, UserDbFieldConstant.ID);
+
+			stmt = conn.createStatement();
+			stmt.execute(query);
+
+		} finally {
+			close(conn, stmt, null);
+		}
+	}
+
+	public void activeUser(long userId) throws SQLException {
+		Connection conn = null;
+		Statement stmt = null;
+
+		try {
+			conn = super.mDataSource.getConnection();
+
+			int activeStatus = EStatus.ACTIVE.getValue();
+			String query = String.format("update %s " + "set %s=" + activeStatus + " where %s=" + userId,
+					UserDbFieldConstant.TABLE, UserDbFieldConstant.STATUS, UserDbFieldConstant.ID);
+
 			stmt = conn.createStatement();
 			stmt.execute(query);
 

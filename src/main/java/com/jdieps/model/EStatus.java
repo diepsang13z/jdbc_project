@@ -1,7 +1,7 @@
 package com.jdieps.model;
 
 public enum EStatus {
-	ACTIVE(1), BLOCK(0);
+	ACTIVE(1), LOCK(0);
 
 	private final int value;
 

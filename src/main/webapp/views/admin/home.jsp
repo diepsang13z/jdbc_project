@@ -61,7 +61,7 @@
 							<!-- INFO -->
 							<div class="modal-body">
 								<div class="row row-cols-2">
-									<div class="col">
+									<div class="col mb-3">
 										<label class="form-label">Họ và tên</label>
 										<input
 											type="text"
@@ -69,7 +69,7 @@
 											class="form-control">
 									</div>
 
-									<div class="col">
+									<div class="col mb-3">
 										<label class="form-label">Email</label>
 										<input
 											type="email"
@@ -77,7 +77,7 @@
 											class="form-control">
 									</div>
 
-									<div class="col">
+									<div class="col mb-3">
 										<label class="form-label">Số điện thoại</label>
 										<input
 											type="text"
@@ -85,7 +85,7 @@
 											class="form-control">
 									</div>
 
-									<div class="col">
+									<div class="col mb-3">
 										<label class="form-label">Địa chỉ</label>
 										<input
 											type="text"
@@ -93,7 +93,7 @@
 											class="form-control">
 									</div>
 
-									<div class="col">
+									<div class="col mb-3">
 										<label class="form-label">Tài khoản</label>
 										<input
 											type="text"
@@ -101,7 +101,7 @@
 											class="form-control">
 									</div>
 
-									<div class="col">
+									<div class="col mb-3">
 										<label class="form-label">Mật khẩu</label>
 										<input
 											type="password"
@@ -109,8 +109,8 @@
 											class="form-control">
 									</div>
 
-									<div class="col">
-										<label class="form-label"></label>
+									<div class="col mb-3">
+										<label class="form-label">Vai trò</label>
 										<select
 											name="role"
 											class="form-select">
@@ -226,18 +226,6 @@
 					var="entry"
 					items="${ENTRIES_DATA}">
 
-					<!-- SET PARAM -->
-					<c:url
-						var="deleteUserLink"
-						value="admin-home">
-						<c:param
-							name="command"
-							value="DELETE" />
-						<c:param
-							name="userId"
-							value="${entry.id}" />
-					</c:url>
-
 					<!-- SHOW INFO -->
 					<tr>
 						<td>${entry.fullname}</td>
@@ -256,28 +244,177 @@
 							<c:when test="${entry.status eq 'ACTIVE'}">
 								<td class="text-success fw-bold">Hoạt động</td>
 							</c:when>
-							<c:when test="${entry.status eq 'BLOCK'}">
+							<c:when test="${entry.status eq 'LOCK'}">
 								<td class="text-danger fw-bold">Đã khóa</td>
 							</c:when>
 						</c:choose>
 						<td>
 							<div class="row row-cols-3 text-center m-1">
+								<!-- Gửi -->
 								<div class="p-1">
 									<a
 										href="#"
 										class="w-100 col btn btn-success">Gửi</a>
 								</div>
+
+								<!-- Sửa -->
 								<div class="p-1">
-									<a
-										href="#"
-										class="w-100 col btn btn-primary">Sửa</a>
+									<button
+										type="button"
+										class="w-100 col btn btn-primary"
+										data-bs-toggle="modal"
+										data-bs-target="#update_user_form_${entry.username}">Sửa</button>
+
+									<!-- Modal -->
+									<div
+										class="modal fade text-start"
+										id="update_user_form_${entry.username}"
+										data-bs-backdrop="static"
+										data-bs-keyboard="false"
+										tabindex="-1"
+										aria-labelledby="staticBackdropLabel"
+										aria-hidden="true">
+
+										<div class="modal-dialog modal-xl">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h1
+														class="modal-title fs-5"
+														id="staticBackdropLabel">Cập nhật</h1>
+													<button
+														type="button"
+														class="btn-close"
+														data-bs-dismiss="modal"
+														aria-label="Close"></button>
+												</div>
+
+												<form
+													action="${context}/admin-home"
+													method="post">
+
+													<!-- COMMAND -->
+													<input
+														type="hidden"
+														name="command"
+														value="UPDATE" />
+
+													<!-- Cập nhật nhanh hơn với id (primary key) -->
+													<input
+														type="hidden"
+														name="id"
+														value="${entry.id}" />
+
+													<!-- INFO -->
+													<div class="modal-body">
+														<div class="row row-cols-2">
+															<div class="col mb-3">
+																<label class="form-label">Họ và tên</label>
+																<input
+																	type="text"
+																	name="fullname"
+																	class="form-control"
+																	value="${entry.fullname}">
+															</div>
+
+															<div class="col mb-3">
+																<label class="form-label">Email</label>
+																<input
+																	type="email"
+																	name="email"
+																	class="form-control"
+																	value="${entry.email}">
+															</div>
+
+															<div class="col mb-3">
+																<label class="form-label">Số điện thoại</label>
+																<input
+																	type="text"
+																	name="phone_number"
+																	class="form-control"
+																	value="${entry.phoneNumber}">
+															</div>
+
+															<div class="col mb-3">
+																<label class="form-label">Địa chỉ</label>
+																<input
+																	type="text"
+																	name="address"
+																	class="form-control"
+																	value="${entry.address}">
+															</div>
+
+															<div class="col mb-3">
+																<label class="form-label">Tài khoản</label>
+																<input
+																	type="text"
+																	name="username"
+																	class="form-control"
+																	value="${entry.username}">
+															</div>
+
+															<div class="col mb-3">
+																<label class="form-label">Vai trò</label>
+																<select
+																	name="role"
+																	class="form-select">
+																	<c:choose>
+																		<c:when test="${entry.roleId == 1}">
+																			<option
+																				value="admin"
+																				selected>Admin</option>
+																			<option value="user">User</option>
+																		</c:when>
+
+																		<c:when test="${entry.roleId == 2}">
+																			<option value="admin">Admin</option>
+																			<option
+																				value="user"
+																				selected>User</option>
+																		</c:when>
+																	</c:choose>
+																</select>
+															</div>
+
+														</div>
+													</div>
+													<!--  -->
+													<div class="modal-footer">
+														<button
+															type="button"
+															class="btn btn-secondary"
+															data-bs-dismiss="modal">Đóng</button>
+														<input
+															type="submit"
+															value="Lưu"
+															class="btn btn-primary">
+													</div>
+												</form>
+											</div>
+										</div>
+									</div>
 								</div>
+
+								<!-- Chi tiết -->
 								<div class="p-1">
 									<a
 										href="#"
 										class="w-100 col btn btn-warning">Chi tiết</a>
 								</div>
+
+								<!-- Xóa -->
 								<div class="p-1">
+									<!-- SET URL AND COMMAND -->
+									<c:url
+										var="deleteUserLink"
+										value="admin-home">
+										<c:param
+											name="command"
+											value="DELETE" />
+										<c:param
+											name="userId"
+											value="${entry.id}" />
+									</c:url>
+
 									<button
 										type="button"
 										class="w-100 col btn btn-danger"
@@ -323,16 +460,50 @@
 										</div>
 									</div>
 								</div>
-								<div class="p-1">
-									<a
-										href="#"
-										class="w-100 col btn btn-danger">Khóa</a>
-								</div>
-								<div class="p-1">
-									<a
-										href="#"
-										class="w-100 col btn btn-success">Mở</a>
-								</div>
+
+								<!-- SET URL AND COMMAND -->
+								<c:url
+									var="activeUserLink"
+									value="admin-home">
+									<c:param
+										name="command"
+										value="ACTIVE" />
+									<c:param
+										name="userId"
+										value="${entry.id}" />
+								</c:url>
+
+								<c:url
+									var="lockUserLink"
+									value="admin-home">
+									<c:param
+										name="command"
+										value="LOCK" />
+									<c:param
+										name="userId"
+										value="${entry.id}" />
+								</c:url>
+
+								<!-- KHÓA, MỞ TÀI KHOẢN -->
+								<c:choose>
+									<c:when test="${entry.status eq 'ACTIVE'}">
+										<!-- Khóa -->
+										<div class="p-1">
+											<a
+												href="${lockUserLink}"
+												class="w-100 col btn btn-danger">Khóa</a>
+										</div>
+									</c:when>
+									
+									<c:when test="${entry.status eq 'LOCK'}">
+										<!-- Mở -->
+										<div class="p-1">
+											<a
+												href="${activeUserLink}"
+												class="w-100 col btn btn-success">Mở</a>
+										</div>
+									</c:when>
+								</c:choose>
 							</div>
 						</td>
 					</tr>

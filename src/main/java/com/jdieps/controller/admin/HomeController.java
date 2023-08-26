@@ -11,7 +11,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 import com.jdieps.service.admin.PaginationService;
@@ -92,12 +91,39 @@ public class HomeController extends HttpServlet {
 			}
 			mCommandAction.get("LIST").method(req, resp);
 		});
-		
+
 		mCommandAction.put("DELETE", (req, resp) -> {
 			try {
 				mUserManagementService.deleteUser(req, resp);
 			} catch (SQLException e) {
 				throw new RuntimeException("ERROR: deleteUser method in UserManagementService!", e);
+			}
+			mCommandAction.get("LIST").method(req, resp);
+		});
+
+		mCommandAction.put("UPDATE", (req, resp) -> {
+			try {
+				mUserManagementService.updateUser(req, resp);
+			} catch (SQLException e) {
+				throw new RuntimeException("ERROR: updateUser method in UserManagementService!", e);
+			}
+			mCommandAction.get("LIST").method(req, resp);
+		});
+
+		mCommandAction.put("LOCK", (req, resp) -> {
+			try {
+				mUserManagementService.lockUser(req, resp);
+			} catch (SQLException e) {
+				throw new RuntimeException("ERROR: lockUser method in UserManagementService!", e);
+			}
+			mCommandAction.get("LIST").method(req, resp);
+		});
+
+		mCommandAction.put("ACTIVE", (req, resp) -> {
+			try {
+				mUserManagementService.activeUser(req, resp);
+			} catch (SQLException e) {
+				throw new RuntimeException("ERROR: activeUser method in UserManagementService!", e);
 			}
 			mCommandAction.get("LIST").method(req, resp);
 		});

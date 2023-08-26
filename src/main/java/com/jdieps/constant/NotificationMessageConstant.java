@@ -7,4 +7,5 @@ public class NotificationMessageConstant {
 	public static final String MISSING_DATA = "Please enter all fields!";
 	public static final String SUCCESS = "Success!";
 	public static final String NOT_SUCCESS = "Not Success!";
+	public static final String LOCKED_ACCOUNT = "Account has been locked";
 }
