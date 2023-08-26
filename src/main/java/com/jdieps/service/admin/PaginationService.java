@@ -42,6 +42,20 @@ public class PaginationService {
 		rd.forward(req, resp);
 	}
 
+	public void listUser(HttpServletRequest req, HttpServletResponse resp, List<UserModel> entries)
+			throws ServletException, IOException, SQLException {
+		int totalPage = mPaginationDbUtil.getTotalPage();
+		mPageControl = 1;
+
+		HttpSession session = req.getSession();
+		session.setAttribute(AdminAttrConstant.TOTAL_PAGE, totalPage);
+		session.setAttribute(AdminAttrConstant.CURRENT_PAGE, mPageControl);
+		session.setAttribute(AdminAttrConstant.ENTRIES_DATA, entries);
+
+		RequestDispatcher rd = req.getRequestDispatcher(mView);
+		rd.forward(req, resp);
+	}
+	
 	public void changePage(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException, SQLException {
 		int page = Integer.parseInt(req.getParameter("page"));

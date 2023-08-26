@@ -3,6 +3,7 @@ package com.jdieps.controller.admin;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
+import com.jdieps.model.UserModel;
 import com.jdieps.service.admin.PaginationService;
 import com.jdieps.service.admin.UserManagementService;
 
@@ -126,6 +128,22 @@ public class HomeController extends HttpServlet {
 				throw new RuntimeException("ERROR: activeUser method in UserManagementService!", e);
 			}
 			mCommandAction.get("LIST").method(req, resp);
+		});
+		
+		mCommandAction.put("SEARCH", (req, resp) -> {
+			List<UserModel> userList = null;
+			
+			try {
+				userList = mUserManagementService.searchUserByEmailOrPhoneNumber(req, resp);
+			} catch (SQLException e) {
+				throw new RuntimeException("ERROR: searchUserByEmailOrPhoneNumber method in UserManagementService!", e);
+			}
+			
+			try {
+				mPaginationService.listUser(req, resp, userList);
+			} catch (ServletException | IOException | SQLException e) {
+				throw new RuntimeException("ERROR: listUser method in PaginationService!", e);
+			}
 		});
 
 	}

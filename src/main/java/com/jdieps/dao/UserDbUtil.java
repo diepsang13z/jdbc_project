@@ -301,4 +301,48 @@ public class UserDbUtil extends DbUtil {
 		}
 	}
 
+	public List<UserModel> searchUserByEmailOrPhoneNumber(String content) throws SQLException {
+		List<UserModel> userList = new ArrayList<>();
+		Connection conn = null;
+		PreparedStatement preStmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = super.mDataSource.getConnection();
+
+			String query = String.format("select * from %s where %s like ? or %s like ?",
+					UserDbFieldConstant.TABLE, UserDbFieldConstant.EMAIL, UserDbFieldConstant.PHONE_NUMBER);
+			preStmt = conn.prepareStatement(query);
+			
+			String condition = "%" + content + "%";
+			preStmt.setString(1, condition);
+			preStmt.setString(2, condition);
+			
+			rs = preStmt.executeQuery();
+			while (rs.next()) {
+				long userId = rs.getLong(UserDbFieldConstant.ID);
+				String userName = rs.getString(UserDbFieldConstant.USERNAME);
+				String userPassword = rs.getString(UserDbFieldConstant.PASSWOED);
+				String userFullname = rs.getString(UserDbFieldConstant.FULLNAME);
+				String userEmail = rs.getString(UserDbFieldConstant.EMAIL);
+				String userPhoneNumber = rs.getString(UserDbFieldConstant.PHONE_NUMBER);
+				String userAdress = rs.getString(UserDbFieldConstant.ADDRESS);
+
+				int dbStatus = rs.getInt(UserDbFieldConstant.STATUS);
+				EStatus userStatus = EStatus.findByValue(dbStatus);
+
+				long roleId = rs.getLong(UserDbFieldConstant.ROLE_ID);
+
+				UserModel user = new UserModel(userId, userName, userPassword, userFullname, userEmail, userPhoneNumber,
+						userAdress, userStatus, roleId);
+				userList.add(user);
+			}
+
+		} finally {
+			close(conn, preStmt, rs);
+		}
+
+		return userList;
+	}
+
 }
